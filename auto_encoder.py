@@ -1,5 +1,5 @@
 from keras.layers import Input, Dense
-from keras.models import Model
+from keras.models import Sequential
 import numpy as np
 
 
@@ -16,14 +16,12 @@ class Config:
 
 ae_config = Config()
 
-inputs = Input(shape=(ae_config.input_dim,))
+model = Sequential()
+model.add(Dense(32, activation='relu', input_dim=ae_config.input_dim))
+model.add(Dense(16, name='embd'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(ae_config.input_dim, activation='sigmoid'))
 
-x = Dense(32, activation='relu')(inputs)
-x = Dense(16)(x)
-x = Dense(32, activation='relu')(x)
-outputs = Dense(ae_config.input_dim, activation='sigmoid')(x)
-
-model = Model(inputs=inputs, outputs=outputs)
 model.compile(optimizer='rmsprop', loss='mse', metrics=['mse'])
 
 training_data = np.load(ae_config.data_path)

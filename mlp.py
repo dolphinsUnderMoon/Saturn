@@ -1,5 +1,5 @@
 from keras.layers import Input, Dense
-from keras.models import Model
+from keras.models import Sequential
 import numpy as np
 import h5py
 
@@ -18,15 +18,13 @@ class Config:
 mlp_config = Config()
 
 
-inputs = Input(shape=(mlp_config.input_dim, ))
+model = Sequential()
+model.add(Dense(128, activation='relu', input_dim=mlp_config.input_dim))
+model.add(Dense(256, activation='relu'))
+model.add(Dense(128, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(1))
 
-x = Dense(128, activation='relu')(inputs)
-x = Dense(256, activation='relu')(x)
-x = Dense(128, activation='relu')(x)
-x = Dense(64, activation='relu')(x)
-outputs = Dense(1)(x)
-
-model = Model(inputs=inputs, outputs=outputs)
 model.compile(optimizer='rmsprop', loss='mse', metrics=['mse'])
 
 train_x = np.load("./data/train_x.npy")
