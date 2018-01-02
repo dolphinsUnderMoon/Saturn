@@ -1,6 +1,7 @@
 from keras.layers import Input, Dense
-from keras.models import Sequential
+from keras.models import Sequential, Model
 import numpy as np
+from keras.models import model_from_json
 
 
 class Config:
@@ -12,6 +13,8 @@ class Config:
 
         self.ae_model_weights_path = "./model/ae_model_weights.h5"
         self.ae_model_structure_path = "./model/ae_model_structure.json"
+
+        self.embeddings_path = "./data/embeddings.npy"
 
 
 ae_config = Config()
@@ -34,3 +37,14 @@ model.save_weights(ae_config.ae_model_weights_path)
 model_structure = model.to_json()
 with open(ae_config.ae_model_structure_path, 'w') as f:
     f.write(model_structure)
+
+
+with open(ae_config.ae_model_structure_path, 'r') as f:
+    model_structure = f.read()
+
+model = model_from_json(model_structure)
+model.load_weights(ae_config.ae_model_weights_path)
+
+embedding_model = Model(inputs=model.input, outputs=model.get_layer('embd').output)
+embedding_outputs = embedding_model.predict(training_data)
+np.save(ae_config.embeddings_path, embedding_outputs)
