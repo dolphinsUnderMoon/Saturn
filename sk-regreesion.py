@@ -5,10 +5,10 @@ from sklearn.ensemble import BaggingRegressor
 from sklearn.tree import ExtraTreeRegressor
 
 
-x_train = np.load("./data/PCA16_low1+high.npy")
-y_train = np.load("./data/low_y1+high_bool.npy")
-x_test = np.load("./data/PCA16_5000.npy")
-y_test = np.load("./data/y_train_5000_bool.npy")
+x_train = np.load("./data/x_selected_5000.npy")
+y_train = np.load("./data/y_train_5000.npy")
+x_test = np.load("./data/x_selected_val.npy")
+y_test = np.load("./data/y_val.npy")
 
 
 def try_different_method(model):
@@ -42,12 +42,13 @@ model_SVR = svm.SVR()
 # KNN regression
 model_KNeighborsRegressor = neighbors.KNeighborsRegressor(weights='uniform')
 # random forest
-model_RandomForestRegressor = ensemble.RandomForestRegressor(n_estimators=20)  # 这里使用20个决策树
+model_RandomForestRegressor = ensemble.RandomForestRegressor(n_estimators=20)#这里使用20个决策树
 # Adaboost regression
-model_AdaBoostRegressor = ensemble.AdaBoostRegressor(n_estimators=50)  # 这里使用50个决策树
+model_AdaBoostRegressor = ensemble.AdaBoostRegressor(base_estimator=svm.SVR(), \
+                                                     n_estimators=2, learning_rate=1)#这里使用50个决策树
 # model_AdaBoostClassifier = ensemble.AdaBoostClassifier(n_estimators=100)
 # GBRT regression
-model_GradientBoostingRegressor = ensemble.GradientBoostingRegressor(n_estimators=100)  # 这里使用100个决策树
+model_GradientBoostingRegressor = ensemble.GradientBoostingRegressor(n_estimators=100)#这里使用100个决策树
 # Bagging regression
 model_BaggingRegressor = BaggingRegressor()
 # ExtraTree regression
@@ -71,10 +72,10 @@ if __name__ == '__main__':
 
     for model in algorithm_collections:
         maes.append(try_different_method(model))
-        x_test2 = np.load("./data/PCA16_test.npy")
+        x_test2 = np.load("./data/x_selected_test.npy")
         y_predict = model.predict(x_test2)
         print(y_predict)
-        # np.savetxt("./data/predict.txt", y_predict)
+        np.savetxt("./data/predict.txt", y_predict)
     print(maes)
 
 
