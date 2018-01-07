@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+
 high = np.load('./data/embeddings3_high.npy')
 low = np.load('./data/embeddings3_low.npy')
 
@@ -21,4 +22,3 @@ plot_3d.set_ylabel('Y')
 plot_3d.set_xlabel('X')
 
 plt.show()
-

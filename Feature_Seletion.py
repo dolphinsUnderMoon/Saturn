@@ -25,5 +25,3 @@ for i in range(x.shape[1]-2):
 # np.save('./data/x_selected_5000.npy', x_selected[0:5000][0:])
 # np.save('./data/x_selected_val.npy', x_selected[5000:][0:])
 # np.save('./data/x_selected_test.npy', x_test_selected)
-
-
