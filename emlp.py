@@ -9,13 +9,15 @@ import os
 class Config:
     def __init__(self):
         self.input_dim = 16
-        self.training_data_x_path = "./data/embeddings16_5000.npy"
+        self.training_data_x_path = "./data/PCA16_5000.npy"
         self.training_data_y_path = "./data/y_train_5000.npy"
-        self.validation_data_x_path = "./data/embeddings16_val.npy"
+        self.validation_data_x_path = "./data/PCA16_val.npy"
         self.validation_data_y_path = "./data/y_val.npy"
-        self.max_epochs = 20
+        self.test_data_x_path = "./data/_test.npy"
+        self.predict_y_path = "./data/predict/predict.txt"
+        self.max_epochs = 60
 
-        self.num_weak_mlps = 10
+        self.num_weak_mlps = 40
         self.weak_mlp_structure = [32, 64, 32]
         self.num_training_samples = 5000
 
@@ -46,8 +48,8 @@ class MultiLayerPerception:
                            metrics=['mae', 'mse'])
 
     def emlp_loss(self, y_true, y_pred):
-        square_error = K.square(y_true - y_pred) / 2
-        return K.sum(self.weights * square_error)
+        square_error = np.square(y_true - y_pred) / 2
+        return np.sum(self.weights * square_error)
 
     def train(self, train_x, train_y, model_path):
         self.model.fit(train_x, train_y, batch_size=train_x.shape[0],
@@ -60,7 +62,7 @@ class MultiLayerPerception:
 
         model_structure = self.model.to_json()
         if not os.path.exists(model_structure_path):
-            os.system("touch " + model_structure_path)
+            os.system("type nul>" + model_structure_path)
 
         with open(model_structure_path, 'w') as f:
             f.write(model_structure)
@@ -78,7 +80,7 @@ class EnsembleMultiLayerPerception:
         if not os.path.exists(model_saved_directory):
             os.mkdir(model_saved_directory)
 
-        weights = K.ones([emlp_config.num_training_samples]) / emlp_config.num_training_samples
+        weights = np.ones([emlp_config.num_training_samples, 1]) / emlp_config.num_training_samples
         for i in range(num_weak_mlps):
             self.weak_mlps.append(MultiLayerPerception(emlp_config.input_dim,
                                                        num_hidden_neural,
@@ -86,7 +88,7 @@ class EnsembleMultiLayerPerception:
                                                        i))
 
     def train(self, train_x, train_y):
-        weights = K.ones([emlp_config.num_training_samples]) / emlp_config.num_training_samples
+        weights = np.ones([emlp_config.num_training_samples, 1]) / emlp_config.num_training_samples
         weak_mlp_maes = []
 
         for weak_mlp in self.weak_mlps:
@@ -94,17 +96,24 @@ class EnsembleMultiLayerPerception:
             weak_mlp.train(train_x, train_y, self.model_saved_directory)
 
             prediction_for_training = weak_mlp.predict(train_x)
-            weak_mlp_maes.append(compute_mae(train_y, prediction_for_training))
-            square_error = (prediction_for_training - train_y) ** 2 / 2
-            alpha = 1. / (np.mean(square_error) + 1e-9)
+            weak_mlp_mae = compute_mae(train_y, prediction_for_training)
+            max_mae = np.max(np.abs(train_y, prediction_for_training))
+            weak_mlp_maes.append(weak_mlp_mae)
+
+            # square_error = (prediction_for_training - train_y) ** 2 / 2
+            relative_error = ((prediction_for_training - train_y) ** 2) / (max_mae ** 2)
+            regression_error_rate = np.dot(relative_error.reshape([train_x.shape[0]]), weak_mlp.weights)
+
+            alpha_temp = regression_error_rate / (1 - regression_error_rate)
+            alpha = np.log(1. / regression_error_rate - 1)
             self.alphas.append(alpha)
 
-            weights *= np.exp(square_error)
+            weights *= np.power(alpha_temp, 1 - relative_error)
             weights /= np.sum(weights)
 
-        alpha_np = np.array(self.alphas)
-        alpha_np /= np.sum(alpha_np)
-        self.alphas = alpha_np.tolist()
+        alphas_np = np.array(self.alphas)
+        alphas_np /= np.sum(alphas_np)
+        self.alphas = alphas_np.tolist()
 
         np.save(self.model_saved_directory + "/alphas.npy", np.array(self.alphas))
         return weak_mlp_maes
@@ -129,13 +138,19 @@ if __name__ == '__main__':
     train_y = np.load(emlp_config.training_data_y_path)
     validation_x = np.load(emlp_config.validation_data_x_path)
     validation_y = np.load(emlp_config.validation_data_y_path)
+    test_x = np.load(emlp_config.test_data_x_path)
 
     weak_mlp_maes = test.train(train_x, train_y)
     print(weak_mlp_maes)
 
     final_training_prediction = test.predict(train_x)
     final_validation_prediction = test.predict(validation_x)
+    # print(final_validation_prediction)
 
     training_mae = compute_mae(train_y, final_training_prediction)
     validation_mae = compute_mae(validation_y, final_validation_prediction)
     print("training mae: [%.4f], validation mae: [%.4f]" % (training_mae, validation_mae))
+
+    predict_y = test.predict(test_x)
+    np.savetxt(emlp_config.predict_y_path, predict_y)
+

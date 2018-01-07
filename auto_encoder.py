@@ -6,26 +6,25 @@ from keras.models import model_from_json
 
 class Config:
     def __init__(self):
-        self.input_dim = 39
-        self.data_path = "./data/"
+        self.input_dim = 32
+        self.data_path = "./data/high.npy"
         self.batch_size = 16
         self.max_epochs = 10
 
         self.ae_model_weights_path = "./model/ae_model_weights.h5"
         self.ae_model_structure_path = "./model/ae_model_structure.json"
-
-        self.embeddings_path = "./data/embeddings.npy"
+        self.embeddings_path = "./data/embeddings3_high.npy"
 
 
 ae_config = Config()
 
 model = Sequential()
 model.add(Dense(32, activation='relu', input_dim=ae_config.input_dim))
-model.add(Dense(16, name='embd'))
+model.add(Dense(3, name='embd'))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(ae_config.input_dim, activation='sigmoid'))
 
-model.compile(optimizer='rmsprop', loss='mse', metrics=['mse'])
+model.compile(optimizer='rmsprop', loss='mse', metrics=['mae', 'mse'])
 
 training_data = np.load(ae_config.data_path)
 
@@ -37,7 +36,6 @@ model.save_weights(ae_config.ae_model_weights_path)
 model_structure = model.to_json()
 with open(ae_config.ae_model_structure_path, 'w') as f:
     f.write(model_structure)
-
 
 with open(ae_config.ae_model_structure_path, 'r') as f:
     model_structure = f.read()
