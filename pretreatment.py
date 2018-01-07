@@ -9,7 +9,6 @@ data_rows = data_shape[0]
 data_cols = data_shape[1]
 
 
-
 for i in range(9):
     low = np.vstack((x[(500 * i):(500 * (i+1))][0:], high_x))
     low_y = np.vstack((y[(500 * i):(500 * (i+1))][0:], high_y))

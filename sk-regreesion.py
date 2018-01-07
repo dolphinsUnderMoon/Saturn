@@ -42,13 +42,13 @@ model_SVR = svm.SVR()
 # KNN regression
 model_KNeighborsRegressor = neighbors.KNeighborsRegressor(weights='uniform')
 # random forest
-model_RandomForestRegressor = ensemble.RandomForestRegressor(n_estimators=20)#这里使用20个决策树
+model_RandomForestRegressor = ensemble.RandomForestRegressor(n_estimators=20)  # 这里使用20个决策树
 # Adaboost regression
-model_AdaBoostRegressor = ensemble.AdaBoostRegressor(base_estimator=svm.SVR(), \
-                                                     n_estimators=2, learning_rate=1)#这里使用50个决策树
+model_AdaBoostRegressor = ensemble.AdaBoostRegressor(base_estimator=svm.SVR(),
+                                                     n_estimators=2, learning_rate=1)  # 这里使用50个决策树
 # model_AdaBoostClassifier = ensemble.AdaBoostClassifier(n_estimators=100)
 # GBRT regression
-model_GradientBoostingRegressor = ensemble.GradientBoostingRegressor(n_estimators=100)#这里使用100个决策树
+model_GradientBoostingRegressor = ensemble.GradientBoostingRegressor(n_estimators=100)  # 这里使用100个决策树
 # Bagging regression
 model_BaggingRegressor = BaggingRegressor()
 # ExtraTree regression
