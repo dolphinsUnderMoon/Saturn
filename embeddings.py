@@ -5,10 +5,10 @@ from keras.models import model_from_json
 
 class Config:
     def __init__(self):
-        self.data_path = "./data/test_x.npy"
+        self.data_path = "./data/train_x.npy"
         self.ae_model_weights_path = "./model/ae_model_weights.h5"
         self.ae_model_structure_path = "./model/ae_model_structure.json"
-        self.embeddings_path = "./data/embeddings_test.npy"
+        self.embeddings_path = "./data/embeddings3.npy"
 
 
 ae_config = Config()

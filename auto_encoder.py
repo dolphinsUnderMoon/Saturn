@@ -7,20 +7,20 @@ from keras.models import model_from_json
 class Config:
     def __init__(self):
         self.input_dim = 32
-        self.data_path = "./data/train_x.npy"
+        self.data_path = "./data/high.npy"
         self.batch_size = 16
         self.max_epochs = 10
 
         self.ae_model_weights_path = "./model/ae_model_weights.h5"
         self.ae_model_structure_path = "./model/ae_model_structure.json"
-        self.embeddings_path = "./data/embeddings8.npy"
+        self.embeddings_path = "./data/embeddings3_high.npy"
 
 
 ae_config = Config()
 
 model = Sequential()
 model.add(Dense(32, activation='relu', input_dim=ae_config.input_dim))
-model.add(Dense(8, name='embd'))
+model.add(Dense(3, name='embd'))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(ae_config.input_dim, activation='sigmoid'))
 
