@@ -12,11 +12,11 @@ data_cols = data_shape[1]
 for i in range(9):
     low = np.vstack((x[(500 * i):(500 * (i+1))][0:], high_x))
     low_y = np.vstack((y[(500 * i):(500 * (i+1))][0:], high_y))
-    np.save('./data/low'+str(i+1)+'+high.npy', low)
+    np.save('./data/low' + str(i+1) + '+high.npy', low)
     np.save('./data/low_y' + str(i+1) + '+high.npy', low_y)
 low = np.vstack((x[4500:][0:], high_x))
 low_y = np.vstack((y[4500:][0:], high_y))
-np.save('./data/low'+str(10)+'+high.npy',low)
+np.save('./data/low' + str(10) + '+high.npy', low)
 np.save('./data/low_y' + str(10) + '+high.npy', low_y)
 
 '''
