@@ -77,5 +77,3 @@ if __name__ == '__main__':
         print(y_predict)
         np.savetxt("./data/predict.txt", y_predict)
     print(maes)
-
-
