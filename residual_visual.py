@@ -10,13 +10,16 @@ svr_residual = svr_predict - ground_truth
 print(np.mean(np.square(svr_residual) / 2))
 print(np.mean(np.square(mlp_residual) / 2))
 
+num_show = ground_truth.shape[0]
 
-# num_show = ground_truth.shape[0]
-# num_show = 50
-#
-# indices = np.arange(0, num_show)
-#
-# plt.plot(indices, mlp_residual[0:num_show, :], 'r', label="mlp")
-# plt.plot(indices, svr_residual[0:num_show, :], 'b', label="svr")
-# plt.legend()
-# plt.show()
+for i in range(num_show):
+    if ground_truth[i, 0] > 6.7:
+        mlp_residual[i, 0] = 0
+        svr_residual[i, 0] = 0
+
+indices = np.arange(0, num_show)
+
+plt.plot(indices, mlp_residual[0:num_show, :], 'r', label="mlp")
+plt.plot(indices, svr_residual[0:num_show, :], 'b', label="svr")
+plt.legend()
+plt.show()

@@ -1,5 +1,5 @@
 from keras.layers import Input, Dense
-from keras.models import Sequential, Model
+from keras.models import Model
 from keras.optimizers import *
 from keras.regularizers import *
 import keras
@@ -51,7 +51,7 @@ outputs = Dense(1)(x)
 
 model = Model(input=inputs, output=outputs)
 
-model.compile(optimizer=Adam(xtp_mlp_config.lr), loss='mse', metrics=['mse'])
+model.compile(optimizer=Adam(xtp_mlp_config.lr), loss='mse', metrics=['mse', 'mae'])
 
 
 train_x = np.load(xtp_mlp_config.training_x_path)

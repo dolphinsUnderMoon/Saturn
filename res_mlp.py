@@ -16,11 +16,12 @@ class Config:
         self.validation_y_path = "./data/y_val.npy"
         self.testing_x_path = "./data/PCA16_test.npy"
         # self.testing_y_path = "./data/high_y.npy"
-        self.num_residual_units = 1
+        self.num_residual_units = 3
         self.batch_size = 32
         self.max_epochs = 30
         self.lr = 1e-3
         self.regularization = 1e-3
+        self.discount = 1e-1
         self.res_mlp_model_path = "./model/res_mlp_model"
 
 
@@ -95,7 +96,7 @@ class ResidualMultiLayerPerception:
     def predict(self, x):
         output = self.regression_mlp.predict(x)
         for res_mlp in self.residual_mlp_collections:
-            output += res_mlp.predict(x)
+            output += 1e-1 * res_mlp.predict(x)
 
         return output
 
