@@ -21,7 +21,7 @@ class Config:
         self.max_epochs = 30
         self.lr = 1e-3
         self.regularization = 1e-3
-        self.discount = 1e-1
+        self.discount_factor = 1e-1
         self.res_mlp_model_path = "./model/res_mlp_model"
 
 
@@ -37,6 +37,7 @@ class ResidualMultiLayerPerception:
         self.regression_mlp = Sequential()
         self.regression_mlp.add(Dense(32, activation='sigmoid', input_dim=config.input_dim,
                                 kernel_regularizer=l2(config.regularization)))
+        self.discount_factor = config.discount_factor
         # self.regression_mlp.add(Dense(64, activation='sigmoid',
         #                         kernel_regularizer=l2(config.regularization)))
         # self.regression_mlp.add(Dense(32, activation='sigmoid',
@@ -96,7 +97,7 @@ class ResidualMultiLayerPerception:
     def predict(self, x):
         output = self.regression_mlp.predict(x)
         for res_mlp in self.residual_mlp_collections:
-            output += 1e-1 * res_mlp.predict(x)
+            output += self.discount_factor * res_mlp.predict(x)
 
         return output
 

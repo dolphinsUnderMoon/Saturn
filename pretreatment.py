@@ -51,27 +51,50 @@ a = np.load("./data/embeddings16_5000.npy")
 aa = np.load("./data/y_train_5000.npy")
 b = np.load("./data/embeddings16_val.npy")
 bb = np.load("./data/y_val.npy")
-high_x = []
-high_y = []
-low_x = []
-low_y = []
-classification_train = []
-classification_validation = []
 
-for i in range(a.shape[0]):
-    if aa[i] > 6.7:
-        classification_train.append(1)
+# get the training data
+# aa = aa.reshape([aa.shape[0], 1])
+# bb = bb.reshape([bb.shape[0], 1])
+#
+# all_1 = np.concatenate((a, aa), axis=1)
+# all_2 = np.concatenate((b, bb), axis=1)
+# all = np.vstack((all_1, all_2))
+#
+# np.save("./data/training_data.npy", all)
+
+# high_x = []
+# high_y = []
+# low_x = []
+# low_y = []
+# classification_train = []
+# classification_validation = []
+
+training_data = np.load("./data/training_data.npy")
+size = training_data.shape[0]
+threshold = 7.413
+
+for i in range(size):
+    if training_data[i, -1] > threshold:
+        training_data[i, -1] = 1
     else:
-        classification_train.append(0)
+        training_data[i, -1] = 0
 
-for i in range(b.shape[0]):
-    if bb[i] > 6.7:
-        classification_validation.append(1)
-    else:
-        classification_validation.append(0)
+print(training_data)
+np.save("./data/training_data_classification.npy", training_data)
 
-np.save("./data/classification_train_y.npy", classification_train)
-np.save("./data/classification_validation_y.npy", classification_validation)
+# high, low = [], []
+#
+# for i in range(size):
+#     if training_data[i, -1] > threshold:
+#         high.append(training_data[i].tolist())
+#     else:
+#         low.append(training_data[i].tolist())
+#
+# np.save("./data/high.npy", np.array(high))
+# np.save("./data/low.npy", np.array(low))
+#
+# np.save("./data/classification_train_y.npy", classification_train)
+# np.save("./data/classification_validation_y.npy", classification_validation)
 
 # np.save("./data/high_x.npy", np.array(high_x))
 # np.save("./data/high_y.npy", np.array(high_y))

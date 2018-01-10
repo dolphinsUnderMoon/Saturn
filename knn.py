@@ -4,10 +4,10 @@ import numpy as np
 class Config:
     def __init__(self):
         self.input_dim = 16
-        self.training_x_path = "./data/high_x_train.npy"
-        self.training_y_path = "./data/high_y_train.npy"
-        self.validation_x_path = "./data/high_x_validation.npy"
-        self.validation_y_path = "./data/high_y_validation.npy"
+        self.training_x_path = "./data/low_x_train.npy"
+        self.training_y_path = "./data/low_y_train.npy"
+        self.validation_x_path = "./data/low_x_validation.npy"
+        self.validation_y_path = "./data/low_y_validation.npy"
         self.testing_x_path = "./data/PCA16_test.npy"
         # self.testing_y_path = "./data/high_y.npy"
         self.batch_size = 32
@@ -15,8 +15,8 @@ class Config:
         self.lr = 1e-3
         self.regularization = 1e-2
         self.model_saving_path = "./model/xgboost_model"
-        self.k = 3
-        self.distance_metric = 'cosine'
+        self.k = 5
+        self.distance_metric = 'l+inf'
         self.weighted_mode = 'distance'
 
 
@@ -89,6 +89,8 @@ class KNearestNeighbourRegression:
             return np.sum(np.abs(op1 - op2))
         elif distance_metric == 'l2':
             return np.sum(np.square(op1 - op2))
+        elif distance_metric == 'l+inf':
+            return np.max(np.abs(op1 - op2))
         elif distance_metric == 'cosine':
             return np.sum(op1 * op2) / np.sqrt(np.sum(op1 ** 2) * np.sum(op2 ** 2))
 
@@ -99,21 +101,21 @@ class KNearestNeighbourRegression:
             distances.append(self.compute_distance(x, training_sample_x, self.distance_metric))
 
         indices = []
-        corre_distances = []
+        corresponded_distances = []
         for i in range(self.k):
             temp = max(distances) if self.distance_metric == 'cosine' else min(distances)
 
-            corre_distances.append(temp)
+            corresponded_distances.append(temp)
             indices.append(distances.index(temp))
             distances[indices[-1]] = float('-Inf') if self.distance_metric == 'cosine' else float('Inf')
 
-        corre_distances = np.array(corre_distances)
+        corresponded_distances = np.array(corresponded_distances)
 
         weights = None
         if weighted_mode == 'uniform':
             weights = np.ones([self.k]) / self.k
         elif weighted_mode == 'distance':
-            weights = np.exp(corre_distances) if self.distance_metric == 'cosine' else np.exp(-corre_distances)
+            weights = np.exp(corresponded_distances) if self.distance_metric == 'cosine' else np.exp(-corresponded_distances)
 
         weights /= np.sum(weights)
         candidates = np.array([self.train_y[index] for index in indices]).reshape([self.k])
@@ -131,7 +133,7 @@ if __name__ == '__main__':
                                       train_x, train_y)
 
     mse = 0
-    num_val = 4  # validation_x.shape[0]
+    num_val = validation_x.shape[0]
     for val_index in range(num_val):
         predict = knn.predict(validation_x[val_index, :], knn_config.weighted_mode)
         mse += compute_square_error(predict, validation_y[val_index, :])
