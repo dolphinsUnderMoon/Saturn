@@ -96,8 +96,10 @@ class ResidualMultiLayerPerception:
 
     def predict(self, x):
         output = self.regression_mlp.predict(x)
+        count = 1
         for res_mlp in self.residual_mlp_collections:
-            output += self.discount_factor * res_mlp.predict(x)
+            output += (self.discount_factor / count) * res_mlp.predict(x)
+            count += 1
 
         return output
 
