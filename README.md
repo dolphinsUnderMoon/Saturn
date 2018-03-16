@@ -1,6 +1,6 @@
 # Saturn
 
-This is I and my friend's codes for Ali Tianchi Bigdata Contest.
+This is I and my friend's codes for a competition.
 They are messy...
 
 ## Usage
