@@ -13,14 +13,14 @@ class Config:
 
         self.ae_model_weights_path = "./model/ae_model_weights.h5"
         self.ae_model_structure_path = "./model/ae_model_structure.json"
-        self.embeddings_path = "./data/embeddings3_high.npy"
+        self.embeddings_path = "./data/embeddings16_high.npy"
 
 
 ae_config = Config()
 
 model = Sequential()
 model.add(Dense(32, activation='relu', input_dim=ae_config.input_dim))
-model.add(Dense(3, name='embd'))
+model.add(Dense(16, name='embd'))
 model.add(Dense(32, activation='relu'))
 model.add(Dense(ae_config.input_dim, activation='sigmoid'))
 

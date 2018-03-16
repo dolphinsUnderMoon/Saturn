@@ -15,4 +15,3 @@ np.save('./data/PCA16_high.npy', temp)
 # np.save('./data/PCA16_5000.npy', train_x[0:5000][0:])
 # np.save('./data/PCA16_val.npy', train_x[5000:][0:])
 # np.save('./data/PCA16_test.npy', test_x)
-
